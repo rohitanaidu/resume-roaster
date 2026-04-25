@@ -1,13 +1,18 @@
 import OpenAI from "openai";
 
-const client = new OpenAI();
+// Lazy init so the client is never created at build time (Vercel build has no env vars).
+let _client: OpenAI | null = null;
+function getClient(): OpenAI {
+  if (!_client) _client = new OpenAI();
+  return _client;
+}
 
 const SYSTEM_PROMPT = `You are a brutally honest, witty career coach who roasts resumes like a stand-up comedian.
 You point out every cliché, vague buzzword, formatting sin, and missed opportunity with sharp humor — but always end with 3 concrete, actionable improvements.
 Keep the roast punchy: 4–6 sharp observations, then the 3 fixes. No fluff.`;
 
 export async function generateRoast(resumeText: string): Promise<string> {
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: "gpt-4o",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
@@ -29,7 +34,7 @@ export async function generateRoastFromImage(
   base64Image: string,
   mimeType: string
 ): Promise<string> {
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: "gpt-4o",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
