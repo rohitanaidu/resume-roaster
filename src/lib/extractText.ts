@@ -1,8 +1,9 @@
 import mammoth from "mammoth";
 
-// pdf-parse ships CJS only; require avoids ESM default-export mismatch.
+// Import the inner implementation to avoid module-level test-file reads that
+// crash in serverless environments (Vercel, Lambda, etc.).
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require("pdf-parse") as (
+const pdfParse = require("pdf-parse/lib/pdf-parse") as (
   buf: Buffer
 ) => Promise<{ text: string }>;
 

@@ -71,17 +71,28 @@ export default function Home() {
       form.append("file", file);
 
       const res = await fetch("/api/roast", { method: "POST", body: form });
-      const data = await res.json();
+
+      let data: { roast?: string; error?: string };
+      try {
+        data = await res.json();
+      } catch {
+        const raw = await res.text().catch(() => "");
+        console.error("[roast] non-JSON response:", res.status, raw);
+        setApiError(`Server error (${res.status}). Check Vercel logs for details.`);
+        setStatus("error");
+        return;
+      }
 
       if (!res.ok || data.error) {
         setApiError(data.error ?? "Something went wrong. Try again.");
         setStatus("error");
       } else {
-        setRoast(data.roast);
+        setRoast(data.roast ?? "");
         setStatus("done");
       }
-    } catch {
-      setApiError("Network error. Check your connection and try again.");
+    } catch (err) {
+      console.error("[roast] fetch failed:", err);
+      setApiError("Could not reach the server. Try again.");
       setStatus("error");
     }
   };
