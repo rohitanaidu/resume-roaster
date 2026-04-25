@@ -48,10 +48,8 @@ export async function POST(
 
     return NextResponse.json({ roast });
   } catch (err) {
-    console.error("[/api/roast]", err);
-    return NextResponse.json(
-      { error: "Something went wrong. Try again." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[/api/roast]", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
