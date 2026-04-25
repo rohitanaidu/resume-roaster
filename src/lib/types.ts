@@ -3,7 +3,7 @@ export interface RoastRequest {
 }
 
 export interface RoastResponse {
-  roast: string;
+  roast?: string;
   error?: string;
 }
 
